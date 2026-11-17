@@ -22,3 +22,8 @@ A desktop Python application built with PyQt6 for studying audio and subtitles (
    ```
    python main.py
    ```
+
+
+## longterm TODOs
+1. add test suites and put them on a pipeline
+2. remove all hardcoding of language options - user should be able to type them into the box instead of using dropdown and you can make the inference by looking at the correct part of the srt file extension
