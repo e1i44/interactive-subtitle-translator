@@ -39,7 +39,7 @@ def parse_srt(content: str) -> list[Cue]:
     """Parse SRT text into cues, silently skipping malformed blocks."""
     normalised = content.lstrip("\ufeff").replace("\r\n", "\n").replace("\r", "\n").strip()
     cues = (_parse_block(block) for block in re.split(r"\n\s*\n", normalised))
-    return [cue for cue in cues if cue is not None]
+    return drop_repeated_lines([cue for cue in cues if cue is not None])
 
 def drop_repeated_lines(cues: list[Cue]) -> list[Cue]:
     """Keep only each cue's new lines.
@@ -59,4 +59,4 @@ def drop_repeated_lines(cues: list[Cue]) -> list[Cue]:
 
 
 def load_srt(path: Path) -> list[Cue]:
-    return drop_repeated_lines(parse_srt(path.read_text(encoding="utf-8-sig")))
+    return parse_srt(path.read_text(encoding="utf-8-sig"))
