@@ -8,7 +8,7 @@ word's English translation. Translations stack up in the right-hand panel.
 
 - Python 3.10+
 - Tkinter (bundled with most Python installs; on Debian/Ubuntu: `sudo apt install python3-tk`; for mac/homebrew losers such as myself `brew install python-tk`). You can check if it is already installed  by running `python -m tkinter`. It should open a little window.
-- Internet access (translations use Google Translate through `deep-translator`)
+- Internet access (translations use Google Translate through `googletrans`)
 - A working audio output device if you want audio
 
 ## Setup
