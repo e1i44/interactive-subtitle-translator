@@ -5,6 +5,26 @@ SAMPLE = (
     "2\r\n00:00:04,000 --> 00:00:05,250\r\nÇa va ?\r\n"
 )
 
+ROLLING = (
+    "1\n00:00:00,000 --> 00:00:03,250\n \nSo, ich sehe. Hier\n\n"
+    "2\n00:00:03,250 --> 00:00:03,500\nSo, ich sehe. Hier\n \n\n"
+    "3\n00:00:03,500 --> 00:00:06,250\nSo, ich sehe. Hier\nist ein Bogen\n"
+)
+
+
+def test_whitespace_only_lines_inside_a_cue_do_not_split_it():
+    assert parse_srt(ROLLING) == [
+        Cue(0.0, 3.25, "So, ich sehe. Hier"),
+        Cue(3.25, 3.5, "So, ich sehe. Hier"),
+        Cue(3.5, 6.25, "So, ich sehe. Hier\nist ein Bogen"),
+    ]
+
+
+def test_rolling_captions_keep_the_range_where_each_line_is_spoken():
+    assert drop_repeated_lines(parse_srt(ROLLING)) == [
+        Cue(0.0, 3.25, "So, ich sehe. Hier"),
+        Cue(3.5, 6.25, "ist ein Bogen"),
+    ]
 
 def test_parses_times_text_and_strips_markup():
     assert parse_srt(SAMPLE) == [

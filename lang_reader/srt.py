@@ -11,6 +11,10 @@ _TIME_LINE = re.compile(
 _MARKUP = re.compile(r"<[^>]+>|\{\\[^}]*\}")  # <i>...</i> and {\an8} styles
 
 
+# A blank line only ends a cue when the next cue's optional index and timing line follow it.
+# Whitespace-only lines *inside* a cue (e.g. " " above the first caption line) don't split it.
+_BLOCK_BREAK = re.compile(r"\n\s*\n(?=(?:\d+\s*\n\s*)?\d+:\d{2}:\d{2}[,.]\d{1,3}\s*-->)")
+
 @dataclass(frozen=True)
 class Cue:
     start: float  # seconds
@@ -38,7 +42,7 @@ def _parse_block(block: str) -> Cue | None:
 def parse_srt(content: str) -> list[Cue]:
     """Parse SRT text into cues, silently skipping malformed blocks."""
     normalised = content.lstrip("\ufeff").replace("\r\n", "\n").replace("\r", "\n").strip()
-    cues = (_parse_block(block) for block in re.split(r"\n\s*\n", normalised))
+    cues = (_parse_block(block) for block in _BLOCK_BREAK.split(normalised))
     return drop_repeated_lines([cue for cue in cues if cue is not None])
 
 def drop_repeated_lines(cues: list[Cue]) -> list[Cue]:
