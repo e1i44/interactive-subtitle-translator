@@ -1,6 +1,6 @@
 """Translation backends. Anything with a matching `translate` method will do."""
 from __future__ import annotations
-
+import asyncio
 from typing import Protocol
 
 
@@ -9,7 +9,6 @@ class Translator(Protocol):
 
 
 class GoogleWordTranslator:
-    """Free Google Translate via deep-translator (needs internet, no API key)."""
 
     def __init__(self, target_lang: str = "en") -> None:
         self._target = target_lang
@@ -18,8 +17,12 @@ class GoogleWordTranslator:
     def translate(self, word: str, source_lang: str) -> str:
         key = (word, source_lang.lower())
         if key not in self._cache:
-            from deep_translator import GoogleTranslator  # lazy: keeps tests dependency-free
-
-            result = GoogleTranslator(source=source_lang, target=self._target).translate(word)
-            self._cache[key] = result or ""
+            self._cache[key] = asyncio.run(self._translate(*key))
         return self._cache[key]
+
+    async def _translate(self, word: str, source_lang: str) -> str:
+        from googletrans import Translator as GoogleClient  # lazy: keeps tests dependency-free
+
+        async with GoogleClient(raise_exception=True) as client:
+            result = await client.translate(word, dest=self._target, src=source_lang)
+        return result.text

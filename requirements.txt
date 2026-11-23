@@ -1,2 +1,2 @@
 pygame-ce>=2.5.7
-deep-translator>=1.11
+googletrans>=4.0.2
